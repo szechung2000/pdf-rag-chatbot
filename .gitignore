@@ -39,10 +39,10 @@ venv.bak/
 Thumbs.db
 
 # Project specific
-vectordb/
 vectordb/*
-data/*.pdf
-data/**/*.pdf
+!vectordb/.gitkeep
+data/*
+!data/.gitkeep
 *.log
 
 # Environment variables
