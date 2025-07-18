@@ -1,0 +1,39 @@
+
+services:
+  ollama:
+    image: ollama/ollama
+    container_name: ollama
+    entrypoint: ["/bin/sh", "-c"]
+    command: ["ollama serve & sleep 10 && echo \"$(date): 🔄 Starting mxbai-embed-large download...\" && ollama pull mxbai-embed-large && echo \"$(date): ✅ mxbai-embed-large completed!\" && echo \"$(date): 🔄 Starting gemma3n:e2b download...\" && ollama pull gemma3n:e2b && echo \"$(date): ✅ gemma3n:e2b completed!\" && echo \"$(date): 🎉 All models ready!\" && wait"]
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama_data:/root/.ollama
+    networks:
+      - rag_network
+
+  rag-app:
+    build: .
+    container_name: rag-app
+    depends_on:
+      - ollama
+    ports:
+      - "8501:8501"
+    environment:
+      - OLLAMA_HOST=http://ollama:11434
+    volumes:
+      - .:/app
+      - ./data:/app/data          # Host folder
+      - ./vectordb:/app/vectordb  # Host folder (changed from volume)
+      - ./models:/app/models      # Host folder (changed from volume)
+    networks:
+      - rag_network
+    command: streamlit run app.py
+
+volumes:
+  ollama_data:
+  app_data:
+
+networks:
+  rag_network:
+    driver: bridge
