@@ -39,8 +39,10 @@ venv.bak/
 Thumbs.db
 
 # Project specific
-vectordb/          # Don't commit the vector database
-data/*.pdf         # Don't commit actual PDF files
+vectordb/
+vectordb/*
+data/*.pdf
+data/**/*.pdf
 *.log
 
 # Environment variables
