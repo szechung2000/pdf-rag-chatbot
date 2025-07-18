@@ -180,7 +180,12 @@ def check_models_available():
             chat_ready = CHAT_MODEL in models
             return embed_ready, chat_ready
         return False, False
-    except:
+    except requests.exceptions.RequestException as e:
+        # This will catch connection errors, timeouts, etc.
+        # st.error(f"Could not connect to Ollama: {e}") # This can be noisy on startup
+        return False, False
+    except Exception as e:
+        st.error(f"An unexpected error occurred while checking models: {e}")
         return False, False
 
 def get_indexed_sources():
@@ -196,7 +201,8 @@ def get_indexed_sources():
             sources = set(meta.get("source", "") for meta in all_data["metadatas"])
             return sources
         return set()
-    except:
+    except Exception as e:
+        st.warning(f"Could not retrieve indexed sources from ChromaDB: {e}")
         return set()
 
 def index_pdfs():
